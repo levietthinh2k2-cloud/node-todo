@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:4.4
+    container_name: todo-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - todo-network
+
+  app:
+    build: .
+    container_name: todo-app
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - MONGODB_URI=mongodb://mongodb:27017/meanstacktutorials
+    depends_on:
+      - mongodb
+    networks:
+      - todo-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  todo-network:
+    driver: bridge
