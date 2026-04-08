@@ -86,7 +86,7 @@ pipeline {
                 script {
                     sleep 15
                     sh '''
-                        curl -f http://localhost:8080 || exit 1
+                        curl -f http://localhost:8081 || exit 1
                     '''
                 }
             }
@@ -96,7 +96,7 @@ pipeline {
     post {
         success {
             echo '✅ Pipeline completed successfully!'
-            echo '🌐 Application is running at http://localhost:8080'
+            echo '🌐 Application is running at http://localhost:8081'
         }
         failure {
             echo '❌ Pipeline failed!'
