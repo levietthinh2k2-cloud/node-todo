@@ -56,8 +56,8 @@ pipeline {
             steps {
                 echo '🐳 Building Docker image...'
                 sh '''
-                    docker build -t %DOCKER_IMAGE%:latest .
-                    docker tag %DOCKER_IMAGE%:latest %DOCKER_IMAGE%:%BUILD_NUMBER%
+                    docker build -t $DOCKER_IMAGE:latest .
+                    docker tag $DOCKER_IMAGE:latest $DOCKER_IMAGE:$BUILD_NUMBER
                 '''
             }
         }
