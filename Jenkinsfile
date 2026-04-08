@@ -22,7 +22,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '📥 Installing npm packages...'
-                bat 'npm install'
+                sh 'npm install'
             }
         }
         
@@ -31,7 +31,7 @@ pipeline {
                 echo '🔍 Running code quality checks...'
                 script {
                     try {
-                        bat 'npm run lint'
+                        sh 'npm run lint'
                     } catch (Exception e) {
                         echo 'No lint script found, skipping...'
                     }
@@ -44,7 +44,7 @@ pipeline {
                 echo '🧪 Running tests...'
                 script {
                     try {
-                        bat 'npm test'
+                        sh 'npm test'
                     } catch (Exception e) {
                         echo 'No test script found, skipping...'
                     }
@@ -55,7 +55,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo '🐳 Building Docker image...'
-                bat '''
+                sh '''
                     docker build -t %DOCKER_IMAGE%:latest .
                     docker tag %DOCKER_IMAGE%:latest %DOCKER_IMAGE%:%BUILD_NUMBER%
                 '''
@@ -65,7 +65,7 @@ pipeline {
         stage('Stop Old Containers') {
             steps {
                 echo '🛑 Stopping old containers...'
-                bat '''
+                sh '''
                     docker compose down || echo "No containers to stop"
                 '''
             }
@@ -74,7 +74,7 @@ pipeline {
         stage('Deploy with Docker Compose') {
             steps {
                 echo '🚀 Deploying application...'
-                bat '''
+                sh '''
                     docker compose up -d
                 '''
             }
@@ -85,7 +85,7 @@ pipeline {
                 echo '💊 Running health check...'
                 script {
                     sleep 15
-                    bat '''
+                    sh '''
                         curl -f http://localhost:8080 || exit 1
                     '''
                 }
@@ -100,11 +100,11 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline failed!'
-            bat 'docker compose down || echo "Cleanup failed"'
+            sh 'docker compose down || echo "Cleanup failed"'
         }
         always {
             echo '🧹 Cleaning up...'
-            bat 'docker system prune -f || echo "Prune failed"'
+            sh 'docker system prune -f || echo "Prune failed"'
         }
     }
 }
