@@ -11,7 +11,7 @@ on:
       environment:
         description: 'Environment to deploy to'
         required: true
-        default: 'production'
+        default: 'EVN'
         type: choice
         options:
           - production
@@ -23,8 +23,8 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     
     environment:
-      name: ${{'production' }}
-      url: http://${{ secrets.SERVER_HOST }}:8081
+      name: ${{ github.event.inputs.environment || 'production' }}
+      url: http://${{ vars.SERVER_HOST }}:8081
     
     steps:
     - name: 📦 Checkout code
@@ -37,12 +37,12 @@ jobs:
     
     - name: 📁 Copy docker-compose to server
       run: |
-        scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_HOST }}:~/node-todo/
+        scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.SSH_USER }}@${{ vars.SERVER_HOST }}:~/node-todo/
     
     - name: 🚀 Deploy via SSH
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.SERVER_HOST }}
+        host: ${{ vars.SERVER_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.SSH_PORT || 22 }}
@@ -69,13 +69,13 @@ jobs:
     - name: 💊 Health Check
       run: |
         sleep 10
-        curl -f http://${{ secrets.SERVER_HOST }}:8081 || exit 1
+        curl -f http://${{ vars.SERVER_HOST }}:8081 || exit 1
         echo "✅ Application is healthy!"
     
     - name: 🧹 Cleanup old images
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.SERVER_HOST }}
+        host: ${{ vars.SERVER_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.SSH_PORT || 22 }}
