@@ -96,4 +96,3 @@ jobs:
         else
           echo "❌ Deployment failed!"
         fi
-      # Add your notification service here (Slack, Discord, Email, etc.)
