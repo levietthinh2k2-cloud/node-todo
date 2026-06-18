@@ -37,6 +37,7 @@ jobs:
     
     - name: 📁 Copy docker-compose to server
       run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ vars.SERVER_HOST }} "mkdir -p ~/node-todo"
         scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.SSH_USER }}@${{ vars.SERVER_HOST }}:~/node-todo/
     
     - name: 🚀 Deploy via SSH
